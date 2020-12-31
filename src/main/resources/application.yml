@@ -1,0 +1,4 @@
+
+logging.level:
+  org.hibernate.SQL: debug #sql 내역이 다 보임... logger를 통해서
+  org.hibernate.type: trace
