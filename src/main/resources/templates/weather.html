@@ -1,10 +1,39 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Hello</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" content="text/css" th:href="@{/css/reset.css}">
+    <link rel="stylesheet" content="text/css" th:href="@{/css/index.css}">
+    <title>Document</title>
 </head>
 <body>
-<p th:text="'안녕하세요. ' + ${data}" >안녕하세요. 손님</p>
+<div class="container">
+    <h2>Weather Forcast</h2>
+    <div class="con-wrap">
+        <p class="today" th:text="${date}">2020년 12월 31일 오후 7:20</p>
+        <div class="column-wrap">
+            <div class="column current-weather">
+                <p th:text="${loc}" class="location"></p>
+                <div class="temperature">
+                    <div class="ico-wrap">
+                        <img th:src="@{/images/ico-code-snow.png}" alt="" />
+                    </div>
+
+                </div>
+                <div class="day-info">
+                    <span th:text="${temperature}+'°'">-5&#176;</span>
+                    <span>눈내림</span>
+                </div>
+            </div>
+            <div class="column slider">
+                준비중
+            </div>
+        </div>
+    </div>
+</div>
+<footer>
+    <address> Made by Team Crobbit </address>
+</footer>
 </body>
 </html>

@@ -5,7 +5,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 @Controller
 public class WeatherController
@@ -38,9 +41,13 @@ public class WeatherController
 		location.setNx(nx);
 		location.setNy(ny);
 		location.setDate(date);
-		
-		model.addAttribute("data", location.toString());
-		
+
+		SimpleDateFormat dateInfo = new SimpleDateFormat("yyyy'년' MM'월' dd'일' E'요일' HH:mm:ss", Locale.KOREA);
+
+		model.addAttribute("date", dateInfo.format(location.getDate()));
+		model.addAttribute("loc", location.getName());
+		model.addAttribute("temperature", location.getT1h());
+
 		return "weather"; // weather.html과 연동!
 	}
 }

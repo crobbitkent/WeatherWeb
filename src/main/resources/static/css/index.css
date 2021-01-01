@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@200;300;400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap');
+
+body, html {
+    width: 100%;
+    height: 100%;
+    font-size: 16px;
+    letter-spacing: -0.025em;
+    font-family: 'Noto Serif KR', serif;
+}
+
+body { background: url('../images/bg.jpg') no-repeat; background-size: cover;}
+
+.container { display: flex; justify-content: center; align-items: center; flex-direction: column; width: 100%; height: calc(100% - 75px); }
+.con-wrap { width: 70%; max-width: 1000px; height: 600px; border-radius: 30px; background: rgba(255, 255, 255, 0.1); box-shadow: 0 15px 15px 0 rgba(0, 0, 0, 0.1); box-sizing: border-box; padding: 40px;  }
+.con-wrap .column { width: calc(50% - 20px); height: 100%; }
+h2 { font-size: 35px; margin-bottom: 30px; color: #ffffff; text-shadow: 0 0 15px rgba(0, 0, 0, 0.1); }
+.column-wrap { width: 100%; display: flex; justify-content: center; align-items: center; }
+
+.today { text-align: center; color: #1e1e1e; margin-bottom: 30px;}
+.location { height: 24px; padding-left: 30px; background: url('../images/ico-placeholder.png') left center no-repeat; background-size: 24px auto; line-height: 24px; margin-bottom: 20px; }
+.ico-wrap { width: 120px; }
+.ico-wrap img { width: 100%; }
+
+.slider { border-radius: 30px; background: rgba(0, 0, 0, 0.15); display: flex; justify-content: center; align-items: center; }
+
+
+/* footer */
+footer { text-align: center; position: fixed; bottom: 0; left: 0; width: 100%; height: 75px; display: flex; justify-content: center; align-items: center; }
+address { font-size: 14px; font-family: 'Roboto Slab', serif; }
