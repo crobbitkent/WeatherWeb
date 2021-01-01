@@ -12,7 +12,17 @@ public class Location
 	private String t1h; // 기온
 	private Date date;
 	
-	public Location() {};
+	//===============================CONSTRUCTOR===================================//
+	protected Location() {};
+	
+	public Location(String name, String nx, String ny) {
+		this.name = name;
+		this.nx = nx;
+		this.ny = ny;
+		this.pty = "";
+		this.sky = "";
+		this.t1h = "";
+	};
 	
 	public Location(String name, String nx, String ny, String pty, String sky, String t1h, Date date)
 	{
@@ -23,6 +33,23 @@ public class Location
 		this.sky = sky;
 		this.t1h = t1h;
 		this.date = date;
+	}
+	
+	//===============================TO STRING===================================//
+	
+	
+	@Override
+	public String toString()
+	{
+		return "Location{" +
+					   "name='" + name + '\'' +
+					   ", nx='" + nx + '\'' +
+					   ", ny='" + ny + '\'' +
+					   ", pty='" + pty + '\'' +
+					   ", sky='" + sky + '\'' +
+					   ", t1h='" + t1h + '\'' +
+					   ", date=" + date +
+					   '}';
 	}
 	
 	public String getName()
