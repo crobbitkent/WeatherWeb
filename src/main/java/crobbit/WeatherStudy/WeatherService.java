@@ -1,7 +1,5 @@
 package crobbit.WeatherStudy;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -9,13 +7,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonArray;
-
-import org.json.simple.parser.JSONParser;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -27,18 +19,20 @@ import java.util.Calendar;
 import java.util.Locale;
 
 @Component
-@Deprecated
 public class  WeatherService
 {
 	protected static Log log = LogFactory.getLog(WeatherService.class);
+	StringBuilder urlBuilder;
+	WeatherDAO dao;
+	Weather[] weatherArray;
 	
-	// 강수형태(PTY) 코드
-	private static String[] PTYCode = new String[] {"없음", "비", "비/눈", "눈", "소나기", "빗방울", "빗방울/눈날림", "눈날림"};
+	public WeatherService(WeatherDAO dao){
+		this.dao = dao;
+	}
 	
-	// 하늘상태(SKY) 코드
-	private static String[] SKYCode = new String[] {"", "맑음", "", "구름많음", "흐림"};
-	
-	public Location weatherUpdate(Location location) throws IOException, org.json.simple.parser.ParseException {
+	// 날씨가 업데이트 된다.
+	// WeatherUI에서 호출된다.
+	public void weatherUpdate(Weather weather) throws IOException, org.json.simple.parser.ParseException {
 		Calendar cal = Calendar.getInstance(Locale.KOREA);
 		
 		String year = String.valueOf(cal.get(cal.YEAR));
@@ -52,27 +46,50 @@ public class  WeatherService
 		String base_time = (time.length() < 2 ? "0" + time : time) + "00"; // 현재 시간 - 1 기준 (1200 1100 형태)
 		String orgTime = (originTime.length() < 2 ? "0" + originTime : originTime) + "00"; // 현재 시간 기준
 		
-		return jsonParse(
-				apiConnection(base_date, base_time, location.getNx(), location.getNy())
-				, location.getName(), orgTime);
+		jsonParse(
+				apiConnection(base_date, base_time, weather, 0)
+				, weather, orgTime);
+		
+		int intTime = (int)(Integer.parseInt(base_time) * 0.01); // 시간만 남음
+		int rest =  intTime % 3;
+		if(2 != intTime % 3){
+			intTime = intTime - (3 - (intTime % 3));
+		}
+		
+		base_time = "" + (intTime * 100);
 		
 		
+		jsonParseVillage(
+				apiConnection(base_date, base_time, weather, 1)
+				, weather, orgTime);
 	}
 	
 	
 	
-	private String apiConnection(String base_date, String base_time, String nx, String ny) throws IOException	{
-		StringBuilder urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst");
+	private String apiConnection(String base_date, String base_time, Weather weather, int select) throws IOException	{
+		
+		switch(select){
+			// 초단기
+			case 0:
+				urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst");
+				break;
+			// 동네예보
+			case 1:
+				urlBuilder = new StringBuilder("http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst");
+				break;
+		}
+		
+		
 		// 인증키
-		urlBuilder.append("?" + URLEncoder.encode("ServiceKey", "UTF-8") + "=" + "ca0nV8nj7B%2FvPU35vfkKH2KPcEXrq42CjvUiRYBuwcFGoIKKY44h4LGLSJYiSTVeQ2KoAgKu9gz6op2SUHRaEA%3D%3D");
+		urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + WeatherDAO.serviceKey);
 		appendUrlBuilder(urlBuilder, "&", "numOfRows", "100");
 		appendUrlBuilder(urlBuilder, "&", "pageNo", "1");
 		appendUrlBuilder(urlBuilder, "&", "dataType", "JSON");
 		
 		appendUrlBuilder(urlBuilder, "&", "base_date", base_date);
 		appendUrlBuilder(urlBuilder, "&", "base_time", base_time);
-		appendUrlBuilder(urlBuilder, "&", "nx", nx);
-		appendUrlBuilder(urlBuilder, "&", "ny", ny);
+		appendUrlBuilder(urlBuilder, "&", "nx", weather.getNx());
+		appendUrlBuilder(urlBuilder, "&", "ny", weather.getNy());
 		
 		URL url = new URL(urlBuilder.toString());
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -90,13 +107,11 @@ public class  WeatherService
 		StringBuilder sb = new StringBuilder();
 		
 		String line = "";
-		int debugCount = 0;
+		
 		while(null != (line = reader.readLine())){
 			sb.append(line);
-			++debugCount;
 		}
 		
-		System.out.println(debugCount);
 		reader.close();
 		conn.disconnect();
 		
@@ -109,18 +124,8 @@ public class  WeatherService
 	
 	// json형태로 넘어온 기상정보를 파싱
 	// 그리고 반환
-	public Location jsonParse(String jsonData, String name, String orgTime) throws org.json.simple.parser.ParseException
+	private void jsonParse(String jsonData, Weather weather, String orgTime) throws org.json.simple.parser.ParseException
 	{
-		Location location = new Location();
-		
-/*		JsonParser parser = new JsonParser();
-		JsonObject obj = (JsonObject)parser.parse(jsonData);
-		JsonObject response = (JsonObject)obj.get("response");
-		JsonObject body = (JsonObject)response.get("body");
-		JsonObject items = (JsonObject)body.get("items");
-		JsonObject item = (JsonObject)items.get("item");
-		*/
-		
 		JSONObject obj = new JSONObject();
 		
 		JSONParser jsonParser = new JSONParser();
@@ -130,34 +135,70 @@ public class  WeatherService
 		JSONObject parse_items = (JSONObject)parse_body.get("items");
 		JSONArray parse_item = (JSONArray)parse_items.get("item");
 		
-		JSONObject weather;
+		JSONObject weatherObj;
 		
 		int size = parse_item.size();
 		
 		for(int i = 0; i < size; ++i){
-			weather = (JSONObject)parse_item.get(i);
+			weatherObj = (JSONObject)parse_item.get(i);
 			
-			if(true == weather.get("fcstTime").equals(orgTime))
+			// 오늘 날짜
+			if(true == weatherObj.get("fcstTime").equals(orgTime))
 			{
-				if (true == weather.get("category").equals("PTY"))
+				// 카테고리 별로 나눠서 정보를 받고 설정한다.
+				if (true == weatherObj.get("category").equals("PTY"))
 				{
-					location.setPty(PTYCode[Integer.parseInt((String) weather.get("fcstValue"))]);
+					weather.setPty(WeatherDAO.PTYCode[Integer.parseInt((String) weatherObj.get("fcstValue"))]);
 				}
 				
-				if (true == weather.get("category").equals("SKY"))
+				if (true == weatherObj.get("category").equals("SKY"))
 				{
-					location.setSky(SKYCode[Integer.parseInt((String) weather.get("fcstValue"))]);
+					weather.setSky(WeatherDAO.SKYCode[Integer.parseInt((String) weatherObj.get("fcstValue"))]);
 				}
 				
-				if (true == weather.get("category").equals("T1H"))
+				if (true == weatherObj.get("category").equals("T1H"))
 				{
-					location.setT1h((String) weather.get("fcstValue")); // T1H 정보 추출
+					weather.setT1h((String) weatherObj.get("fcstValue")); // T1H 정보 추출
 				}
 			}
 		} // for end
+	}
+	
+	// json형태로 넘어온 기상정보를 파싱
+	// 그리고 반환
+	private void jsonParseVillage(String jsonData, Weather weather, String orgTime) throws org.json.simple.parser.ParseException
+	{
+		JSONObject obj = new JSONObject();
 		
-		location.setName(name);
+		JSONParser jsonParser = new JSONParser();
+		JSONObject jsonObject = (JSONObject)jsonParser.parse(jsonData);
+		JSONObject parse_response = (JSONObject)jsonObject.get("response");
+		JSONObject parse_body = (JSONObject)parse_response.get("body");
+		JSONObject parse_items = (JSONObject)parse_body.get("items");
+		JSONArray parse_item = (JSONArray)parse_items.get("item");
 		
-		return location;
+		JSONObject weatherObj;
+		
+		int size = parse_item.size();
+		weatherArray = new Weather[60];
+		int count = 0;
+		
+		for (int i = 0; i < size; ++i)
+		{
+			weatherObj = (JSONObject) parse_item.get(i);
+			
+			// 카테고리가 '3시간 기온'인 경우만...
+			if (true == weatherObj.get("category").equals("T3H"))
+			{
+				weatherArray[count] = new Weather();
+				Object test1 = weatherObj.get("fcstValue");
+				String test = (String)(test1);
+				weatherArray[count++].setT1h(test);
+			}
+			
+			
+		} // for end
+		
+		int a = 0;
 	}
 }
