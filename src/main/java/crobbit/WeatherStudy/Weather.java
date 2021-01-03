@@ -1,5 +1,6 @@
 package crobbit.WeatherStudy;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /*
@@ -20,13 +21,16 @@ public class Weather
 	private String pty; // 강수 형태
 	private String sky; // 하늘 상태
 	private String t1h; // 기온 (현재)
-	private Date date;
 	private String minTemperature; // 최저 온도
 	private String maxTemperature; // 최고 온도
 	private String rainRate;
 	private String weeklySky;
-	
+	private String fcstTime;
 
+	// 강수형태(PTY) 코드
+	public static final String[] PTYCode = new String[] {"없음", "비", "비/눈", "눈", "소나기", "빗방울", "빗방울/눈날림", "눈날림"};
+	// 하늘상태(SKY) 코드
+	public static final String[] SKYCode = new String[] {"", "맑음", "", "구름많음", "흐림"};
 	
 	//===============================CONSTRUCTOR===================================//
 	protected Weather() {
@@ -43,38 +47,33 @@ public class Weather
 		this.name = name;
 		this.nx = nx;
 		this.ny = ny;
-		this.pty = "";
-		this.sky = "";
-		this.t1h = "";
 	};
 	
-	public Weather(String name, String nx, String ny, String pty, String sky, String t1h, Date date)
-	{
-		this.name = name;
-		this.nx = nx;
-		this.ny = ny;
-		this.pty = pty;
-		this.sky = sky;
-		this.t1h = t1h;
-		this.date = date;
-	}
-	
 	//===============================TO STRING===================================//
-	
-	
 	@Override
 	public String toString()
 	{
-		return "Location{" +
+		return "Weather{" +
 					   "name='" + name + '\'' +
 					   ", nx='" + nx + '\'' +
 					   ", ny='" + ny + '\'' +
 					   ", pty='" + pty + '\'' +
 					   ", sky='" + sky + '\'' +
 					   ", t1h='" + t1h + '\'' +
-					   ", date=" + date +
 					   '}';
 	}
+
+	//===============================GETTER SETTER===================================//
+	public String getFcstTime()
+	{
+		return fcstTime;
+	}
+	
+	public void setFcstTime(String fcstTime)
+	{
+		this.fcstTime = fcstTime;
+	}
+	
 	
 	public String getRainRate()
 	{
@@ -154,7 +153,7 @@ public class Weather
 	
 	public void setPty(String pty)
 	{
-		this.pty = pty;
+		this.pty = PTYCode[Integer.parseInt(pty)];
 	}
 	
 	public String getSky()
@@ -164,7 +163,7 @@ public class Weather
 	
 	public void setSky(String sky)
 	{
-		this.sky = sky;
+		this.sky = SKYCode[Integer.parseInt(sky)];
 	}
 	
 	public String getT1h()
@@ -175,15 +174,5 @@ public class Weather
 	public void setT1h(String t1h)
 	{
 		this.t1h = t1h;
-	}
-	
-	public Date getDate()
-	{
-		return date;
-	}
-	
-	public void setDate(Date date)
-	{
-		this.date = date;
 	}
 }

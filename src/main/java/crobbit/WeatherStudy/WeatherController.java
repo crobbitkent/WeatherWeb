@@ -14,7 +14,6 @@ public class WeatherController
 {
 	WeatherService weatherService;
 	WeeklyWeatherService weeklyWeatherService;
-	Weather weather;
 	
 	public WeatherController() throws IOException, org.json.simple.parser.ParseException
 	{
@@ -24,22 +23,18 @@ public class WeatherController
 	}
 	
 	@GetMapping("weather")
-	public String hello(Model model) throws IOException, org.json.simple.parser.ParseException
+	public String weatherUpdate(Model model) throws IOException, org.json.simple.parser.ParseException
 	{
-		Date date = new Date();
-		
-		weather = new Weather();
-		weather.setDate(date);
-		// x = 127.04955555555556, y =	37.514575
-		
-		weatherService.weatherUpdate(weather);
-		weeklyWeatherService.update();
+		this.weatherService.update();
+		this.weeklyWeatherService.update();
 
 		SimpleDateFormat dateInfo = new SimpleDateFormat("yyyy'년' MM'월' dd'일' E'요일' HH:mm:ss", Locale.KOREA);
 
-		model.addAttribute("date", dateInfo.format(weather.getDate()));
-		model.addAttribute("loc", weather.getName());
-		model.addAttribute("temperature", weather.getT1h());
+		Weather today = weatherService.getTodayWeather();
+		Date date = new Date();
+		model.addAttribute("date", dateInfo.format(date));
+		model.addAttribute("loc", today.getName());
+		model.addAttribute("temperature", today.getT1h());
 
 		return "weather"; // weather.html과 연동!
 	}
