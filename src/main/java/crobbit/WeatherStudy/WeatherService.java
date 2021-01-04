@@ -40,7 +40,8 @@ public class WeatherService {
     public void getShortForecast() throws IOException, ParseException {
         String baseDate = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         String orgTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH")) + "00";
-        String baseTime = (Integer.parseInt(orgTime) - 100) + "";
+        int intTime = (Integer.parseInt(orgTime) - 100);
+        String baseTime = (intTime < 1000) ? "0" + intTime + "" : intTime + "";
 
         JSONArray jsonArray = APIParser.apiSetUp(APIType.ULTRA_SHORT, dao, baseDate, baseTime);
 

@@ -24,7 +24,7 @@ public class APIParser {
     };
 
 
-    // API에 접근해서 JSON Data를 item 부분만 JSAON ARRAY로 반환
+    // API에 접근해서 JSON Data를 item 부분만 JSON ARRAY로 반환
     public static JSONArray apiSetUp(APIType type, WeatherDAO dao, String base_date, String base_time) throws IOException, org.json.simple.parser.ParseException {
         StringBuilder urlBuilder = new StringBuilder(apiBaseURL[type.ordinal()]);
 
