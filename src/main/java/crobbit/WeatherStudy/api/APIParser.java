@@ -1,5 +1,6 @@
-package crobbit.WeatherStudy;
+package crobbit.WeatherStudy.api;
 
+import crobbit.WeatherStudy.repository.WeatherDAO;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

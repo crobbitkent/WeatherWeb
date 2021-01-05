@@ -1,4 +1,7 @@
-package crobbit.WeatherStudy;
+package crobbit.WeatherStudy.repository;
+
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.Date;
@@ -12,7 +15,8 @@ o 중기예보 통보문에서 구름의 양에 따라 하늘상태를 3단계(�
 * 소나기 추가(2020.9.14.)
  */
 
-
+@Setter
+@Getter
 public class Weather
 {
 	private String name; // 주소지 이름
@@ -33,7 +37,7 @@ public class Weather
 	public static final String[] SKYCode = new String[] {"", "맑음", "", "구름많음", "흐림"};
 	
 	//===============================CONSTRUCTOR===================================//
-	protected Weather() {
+	public Weather() {
 		// 임시로 기본 정보를 넣어 놓는다.
 		String loc = "서울특별시 강남구";
 		String nx = "37";
@@ -63,116 +67,4 @@ public class Weather
 					   '}';
 	}
 
-	//===============================GETTER SETTER===================================//
-	public String getFcstTime()
-	{
-		return fcstTime;
-	}
-	
-	public void setFcstTime(String fcstTime)
-	{
-		this.fcstTime = fcstTime;
-	}
-	
-	
-	public String getRainRate()
-	{
-		return rainRate;
-	}
-	
-	public void setRainRate(String rainRate)
-	{
-		this.rainRate = rainRate;
-	}
-	
-	public String getWeeklySky()
-	{
-		return weeklySky;
-	}
-	
-	public void setWeeklySky(String weeklySky)
-	{
-		this.weeklySky = weeklySky;
-	}
-	
-
-	public String getMinTemperature()
-	{
-		return minTemperature;
-	}
-	
-	public void setMinTemperature(String minTemperature)
-	{
-		this.minTemperature = minTemperature;
-	}
-	
-	public String getMaxTemperature()
-	{
-		return maxTemperature;
-	}
-	
-	public void setMaxTemperature(String maxTemperature)
-	{
-		this.maxTemperature = maxTemperature;
-	}
-	
-	public String getName()
-	{
-		return name;
-	}
-	
-	public void setName(String name)
-	{
-		this.name = name;
-	}
-	
-	public String getNx()
-	{
-		return nx;
-	}
-	
-	public void setNx(String nx)
-	{
-		this.nx = nx;
-	}
-	
-	public String getNy()
-	{
-		return ny;
-	}
-	
-	public void setNy(String ny)
-	{
-		this.ny = ny;
-	}
-	
-	public String getPty()
-	{
-		return pty;
-	}
-	
-	public void setPty(String pty)
-	{
-		this.pty = PTYCode[Integer.parseInt(pty)];
-	}
-	
-	public String getSky()
-	{
-		return sky;
-	}
-	
-	public void setSky(String sky)
-	{
-		this.sky = SKYCode[Integer.parseInt(sky)];
-	}
-	
-	public String getT1h()
-	{
-		return t1h;
-	}
-	
-	public void setT1h(String t1h)
-	{
-		this.t1h = t1h;
-	}
 }

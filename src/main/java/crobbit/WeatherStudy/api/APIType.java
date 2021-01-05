@@ -1,4 +1,4 @@
-package crobbit.WeatherStudy;
+package crobbit.WeatherStudy.api;
 
 public enum APIType {
         VILLAGE,

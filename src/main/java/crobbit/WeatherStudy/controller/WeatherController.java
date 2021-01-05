@@ -1,5 +1,9 @@
-package crobbit.WeatherStudy;
+package crobbit.WeatherStudy.controller;
 
+import crobbit.WeatherStudy.repository.Weather;
+import crobbit.WeatherStudy.repository.WeatherDAO;
+import crobbit.WeatherStudy.service.WeatherService;
+import crobbit.WeatherStudy.service.WeeklyWeatherService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
