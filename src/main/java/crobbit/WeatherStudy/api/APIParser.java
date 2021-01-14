@@ -4,10 +4,16 @@ import crobbit.WeatherStudy.repository.WeatherDAO;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -21,24 +27,32 @@ public class APIParser {
             "http://apis.data.go.kr/1360000/VilageFcstInfoService/getVilageFcst",
             "http://apis.data.go.kr/1360000/VilageFcstInfoService/getUltraSrtFcst",
             "http://apis.data.go.kr/1360000/MidFcstInfoService/getMidTa",
-            "http://apis.data.go.kr/1360000/MidFcstInfoService/getMidLandFcst"
+            "http://apis.data.go.kr/1360000/MidFcstInfoService/getMidLandFcst",
     };
+
+
 
 
     // API에 접근해서 JSON Data를 item 부분만 JSON ARRAY로 반환
     public static JSONArray apiSetUp(APIType type, WeatherDAO dao, String base_date, String base_time) throws IOException, org.json.simple.parser.ParseException {
         StringBuilder urlBuilder = new StringBuilder(apiBaseURL[type.ordinal()]);
-
+        String datatype = "json";
         urlBuilder.append("?" + URLEncoder.encode("serviceKey", "UTF-8") + "=" + serviceKey);
         appendUrlBuilder(urlBuilder, "&", "numOfRows", "500");
         appendUrlBuilder(urlBuilder, "&", "pageNo", "1");
-        appendUrlBuilder(urlBuilder, "&", "dataType", "JSON");
+
 
         // API 주소를 2개로 나누기
         if(APIType.MID == type || APIType.MIDLAND == type){
+            appendUrlBuilder(urlBuilder, "&", "dataType", "JSON");
             appendUrlBuilder(urlBuilder, "&", "regId", (APIType.MID == type) ? regId1 : regId2);
             appendUrlBuilder(urlBuilder, "&", "tmFc", base_date + base_time); // 기준 날짜와 시간
-        }else {
+        }else if(APIType.THUNDER == type) {
+            appendUrlBuilder(urlBuilder, "&", "dataType", "JSON");
+            appendUrlBuilder(urlBuilder, "&", "lgtType", "2"); // 낙뢰 타입
+            appendUrlBuilder(urlBuilder, "&", "dateTime", base_time); // 기준 시간
+        } else {
+            appendUrlBuilder(urlBuilder, "&", "dataType", "JSON");
             appendUrlBuilder(urlBuilder, "&", "base_date", base_date); // 기준 날짜
             appendUrlBuilder(urlBuilder, "&", "base_time", base_time); // 기준 시간
             appendUrlBuilder(urlBuilder, "&", "nx", dao.getTodayWeather().getNx());
@@ -50,7 +64,7 @@ public class APIParser {
         URL url = new URL(urlBuilder.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("GET");
-        conn.setRequestProperty("Content-type", "application/json");
+        conn.setRequestProperty("Content-type", "application/" + datatype);
 
         BufferedReader reader;
 
@@ -71,14 +85,34 @@ public class APIParser {
         reader.close();
         conn.disconnect();
 
+        JSONObject parse_items = null;
         String jsonData = sb.toString();
+        
+        // XML
+//        if(APIType.THUNDER == type) {
+//
+//
+//            try {
+//                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//                DocumentBuilder builder = factory.newDocumentBuilder();
+//                InputSource is = new InputSource(new StringReader(jsonData));
+//                Document doc = builder.parse(is);
+//
+//            } catch(Exception e){
+//                e.printStackTrace();
+//            }
+//
+//        } else {
+            // JSON
 
-        JSONObject obj = new JSONObject();
-        JSONParser jsonParser = new JSONParser();
-        JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonData);
-        JSONObject parse_response = (JSONObject) jsonObject.get("response");
-        JSONObject parse_body = (JSONObject) parse_response.get("body");
-        JSONObject parse_items = (JSONObject) parse_body.get("items");
+
+            JSONObject obj = new JSONObject();
+            JSONParser jsonParser = new JSONParser();
+            JSONObject jsonObject = (JSONObject) jsonParser.parse(jsonData);
+            JSONObject parse_response = (JSONObject) jsonObject.get("response");
+            JSONObject parse_body = (JSONObject) parse_response.get("body");
+            parse_items = (JSONObject) parse_body.get("items");
+        // }
 
         return (JSONArray) parse_items.get("item");
     }

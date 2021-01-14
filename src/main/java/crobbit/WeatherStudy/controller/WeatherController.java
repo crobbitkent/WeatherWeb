@@ -30,7 +30,6 @@ public class WeatherController
 	public String weatherUpdate(Model model) throws IOException, org.json.simple.parser.ParseException
 	{
 		this.weatherService.update();
-		this.weeklyWeatherService.update();
 
 		SimpleDateFormat dateInfo = new SimpleDateFormat("yyyy'년' MM'월' dd'일' E'요일' HH:mm:ss", Locale.KOREA);
 

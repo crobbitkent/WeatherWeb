@@ -4,5 +4,6 @@ public enum APIType {
         VILLAGE,
         ULTRA_SHORT,
         MID,
-        MIDLAND
+        MIDLAND,
+        THUNDER
 }

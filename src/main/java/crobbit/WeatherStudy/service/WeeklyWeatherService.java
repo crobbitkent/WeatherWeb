@@ -19,16 +19,12 @@ public class WeeklyWeatherService {
 
     public WeeklyWeatherService(WeatherDAO dao) throws IOException, org.json.simple.parser.ParseException {
         this.dao = dao;
-        update();
     }
 
     public Weather[] getWeeklyWeather(){
         return this.dao.getWeeklyWeather();
     }
 
-    public void update() throws IOException, org.json.simple.parser.ParseException {
-        dao.readyWeeklyWeather();
-    }
 
     private void appendUrlBuilder(StringBuilder builder, String mark, String a1, String a2) throws IOException {
         builder.append(mark + URLEncoder.encode(a1, "UTF-8") + "=" + URLEncoder.encode(a2, "UTF-8"));

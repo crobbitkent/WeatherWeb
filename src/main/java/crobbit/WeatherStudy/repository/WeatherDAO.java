@@ -38,12 +38,10 @@ public class WeatherDAO
 	public void readyTodayWeather() throws IOException, ParseException {
 		getShortForecast();
 		getHourlyForecast();
-	}
-
-	public void readyWeeklyWeather() throws IOException, ParseException {
 		getMidTa();
 		getMidLandFcst();
 	}
+
 
 
 	// 초단기 예보 API를 통해 현재 날씨를 설정
@@ -207,7 +205,7 @@ public class WeatherDAO
 
 	//==================================WEEKLY WEATHER=================================//
 	// 중기 기온 예보를 통해 3일후 ~ 10일후의 최저 최고 온도를 가져온다.
-	public void getMidTa() throws IOException, ParseException {
+	private void getMidTa() throws IOException, ParseException {
 		String baseDate = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
 		String orgTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH")) + "00";
 		int intTime = (Integer.parseInt(orgTime) - 100);
@@ -237,7 +235,7 @@ public class WeatherDAO
 	}
 
 	// 중기 육상 예보를 통해 3일후 ~ 10일후의 하늘상태와 강수확률을 가져온다.
-	public void getMidLandFcst() throws IOException, ParseException {
+	private void getMidLandFcst() throws IOException, ParseException {
 		String baseDate = LocalDateTime.now().format(DateTimeFormatter.BASIC_ISO_DATE);
 		String orgTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("HH")) + "00";
 		int intTime = (Integer.parseInt(orgTime) - 100);
@@ -263,6 +261,7 @@ public class WeatherDAO
 			weeklyWeather[i].setWeeklySky((String) weatherObj.get(sky));
 		}
 	}
+
 
 
 
